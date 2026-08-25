@@ -2,7 +2,7 @@ const crypto = require('crypto');
 
 const { REQUIRED_MONGO_DB_NAME, withForcedMongoDbName, extractMongoDbName, assertAllowedMongoDbName } = require('../utils/mongoDbName');
 
-const REQUIRED_ENV_VARS = ['MONGODB_URI', 'ADMIN_EMAIL', 'ADMIN_PASSWORD'];
+const REQUIRED_ENV_VARS = ['MONGODB_URI', 'ADMIN_PASSWORD'];
 
 function readEnv(name) {
   const value = process.env[name];
