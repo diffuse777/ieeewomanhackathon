@@ -1,0 +1,38 @@
+:root {
+  color-scheme: light;
+  --black: #3a241e;
+  --near-black: #f8f1e7;
+  --surface: #fff8ef;
+  --surface-2: #f3eadc;
+  --surface-3: #efe4d4;
+  --brown: #74372a;
+  --crimson: #74372a;
+  --crimson-deep: #5d2c22;
+  --crimson-soft: #a96f63;
+  --burnt: #a96f63;
+  --amber: #c9a35b;
+  --moon: #e6d3a5;
+  --ink: #3a241e;
+  --cream: #fff8ef;
+  --muted: #7a5c54;
+  --line: #e6d3a5;
+  --line-strong: #c9a35b;
+  --danger: #9b3b32;
+  --focus: #74372a;
+  --on-accent: #fff8ef;
+  --qr-mat: #fff8ef;
+  --paper: #f8f1e7;
+  --paper-soft: #fff8ef;
+  --gold: #c9a35b;
+  --gold-light: #e6d3a5;
+  --space: clamp(1rem, 3vw, 2rem);
+  --max: 72rem;
+  --radius: 2px;
+  --header-h: 4.5rem;
+  --font-heading: "Cormorant Garamond", serif;
+  --font-display: var(--font-heading);
+  --font-serif: var(--font-heading);
+  --font-body: "Manrope", sans-serif;
+  --font-label: "Montserrat", sans-serif;
+  --shadow: 0 10px 28px rgb(58 36 30 / 0.08);
+}
