@@ -28,7 +28,7 @@ export const HACKATHON = Object.freeze({
     unit: 'per participant',
   }),
   team: Object.freeze({
-    minMembers: 1,
+    minMembers: 3,
     maxMembers: 4,
   }),
   contact: Object.freeze({

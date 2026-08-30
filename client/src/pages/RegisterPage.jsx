@@ -7,6 +7,8 @@ import { useRegistrationDraft } from '../context/RegistrationDraftContext';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { validateTeamStep } from '../utils/registrationForm';
 import { useState } from 'react';
+import { useEffect } from 'react';
+import { getHealth } from '../services/healthService';
 
 export function RegisterPage() {
   const navigate = useNavigate();
@@ -18,6 +20,61 @@ export function RegisterPage() {
     { length: HACKATHON.team.maxMembers - HACKATHON.team.minMembers + 1 },
     (_, index) => HACKATHON.team.minMembers + index
   );
+
+  const [registrationOpen, setRegistrationOpen] = useState(true);
+  const [windowInfo, setWindowInfo] = useState(null);
+  const [countdown, setCountdown] = useState('');
+
+  useEffect(() => {
+    let mounted = true;
+    getHealth()
+      .then((res) => {
+        const data = res.data || {};
+        const win = data.registrationWindow || null;
+        if (!mounted) return;
+        setWindowInfo(win);
+        setRegistrationOpen(win ? Boolean(win.open) : true);
+      })
+      .catch(() => {});
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!windowInfo) return undefined;
+
+    function fmt(ms) {
+      if (ms <= 0) return '0s';
+      const s = Math.floor(ms / 1000) % 60;
+      const m = Math.floor(ms / (60 * 1000)) % 60;
+      const h = Math.floor(ms / (60 * 60 * 1000)) % 24;
+      const d = Math.floor(ms / (24 * 60 * 60 * 1000));
+      return `${d ? d + 'd ' : ''}${h ? h + 'h ' : ''}${m ? m + 'm ' : ''}${s}s`;
+    }
+
+    let target = null;
+    const now = Date.now();
+    if (windowInfo.startAt && new Date(windowInfo.startAt).getTime() > now) {
+      target = new Date(windowInfo.startAt).getTime();
+    } else if (windowInfo.endAt && new Date(windowInfo.endAt).getTime() > now) {
+      target = new Date(windowInfo.endAt).getTime();
+    }
+
+    if (!target) {
+      setCountdown('');
+      return undefined;
+    }
+
+    function tick() {
+      const remaining = target - Date.now();
+      setCountdown(fmt(remaining));
+    }
+
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [windowInfo]);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -42,7 +99,13 @@ export function RegisterPage() {
         hostel students on the next step. The fee is {formatFeePerParticipant()}.
       </p>
 
-      <form className="register-form" onSubmit={handleSubmit} noValidate>
+      {registrationOpen ? (
+        <form className="register-form" onSubmit={handleSubmit} noValidate>
+          {windowInfo && windowInfo.open ? (
+            <div className="register-banner register-banner--open">
+              Registration is open. Closes in {countdown || '—'}.
+            </div>
+          ) : null}
         <FormInput
           id="teamName"
           label="Team name"
@@ -85,7 +148,19 @@ export function RegisterPage() {
         <button className="btn" type="submit">
           Continue to participants
         </button>
-      </form>
+        </form>
+      ) : (
+        <div className="register-closed">
+          <p className="lede">Registration is currently closed.</p>
+          {windowInfo ? (
+            <p>
+              {windowInfo.startAt && new Date(windowInfo.startAt) > new Date()
+                ? `Opens in ${countdown || '—'}`
+                : `Closed — Opens: ${windowInfo.startAt || '—'} · Closes: ${windowInfo.endAt || '—'}`}
+            </p>
+          ) : null}
+        </div>
+      )}
     </article>
   );
 }

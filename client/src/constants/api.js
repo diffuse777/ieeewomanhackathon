@@ -23,6 +23,8 @@ export const API_ENDPOINTS = Object.freeze({
   ADMIN_EXPORT_CSV: '/admin/registrations/export/csv',
   ADMIN_EXPORT_PDF: '/admin/registrations/export/pdf',
   ADMIN_HEALTH: '/admin/health',
+  ADMIN_SETTINGS: '/admin/settings',
+  ADMIN_BLOCKED: '/admin/blocked',
   PAYMENT_MOCK_COMPLETE: '/payments/mock/complete',
 });
 

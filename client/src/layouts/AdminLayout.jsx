@@ -17,6 +17,9 @@ function titleFromPath(pathname) {
   if (pathname === ROUTES.ADMIN_REGISTRATIONS) {
     return 'Registrations';
   }
+  if (pathname === ROUTES.ADMIN_ADD_TEAMS) {
+    return 'Add Teams';
+  }
   if (pathname.startsWith(`${ROUTES.ADMIN_REGISTRATIONS}/`)) {
     return 'Team details';
   }

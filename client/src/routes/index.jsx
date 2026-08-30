@@ -3,6 +3,9 @@ import { AdminLayout } from '../layouts/AdminLayout';
 import { PublicLayout } from '../layouts/PublicLayout';
 import { AdminHealthPage } from '../pages/AdminHealthPage';
 import { AdminDashboardPage } from '../pages/AdminDashboardPage';
+import { AdminSettingsPage } from '../pages/AdminSettingsPage';
+import { AdminBlockedPage } from '../pages/AdminBlockedPage';
+import { AdminAddTeamsPage } from '../pages/AdminAddTeamsPage';
 import { AdminIndexRedirect, AdminLoginPage } from '../pages/AdminLoginPage';
 import { AdminRegistrationDetailPage } from '../pages/AdminRegistrationDetailPage';
 import { AdminRegistrationsPage } from '../pages/AdminRegistrationsPage';
@@ -36,6 +39,9 @@ export function AppRoutes() {
       <Route element={<AdminLayout />}>
         <Route path={ROUTES.ADMIN_DASHBOARD} element={<AdminDashboardPage />} />
         <Route path={ROUTES.ADMIN_HEALTH} element={<AdminHealthPage />} />
+        <Route path={ROUTES.ADMIN_SETTINGS} element={<AdminSettingsPage />} />
+        <Route path={ROUTES.ADMIN_BLOCKED} element={<AdminBlockedPage />} />
+        <Route path={ROUTES.ADMIN_ADD_TEAMS} element={<AdminAddTeamsPage />} />
         <Route path={ROUTES.ADMIN_REGISTRATIONS} element={<AdminRegistrationsPage />} />
         <Route path="/admin/registrations/:id" element={<AdminRegistrationDetailPage />} />
       </Route>

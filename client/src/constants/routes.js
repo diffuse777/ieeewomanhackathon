@@ -14,6 +14,9 @@ export const ROUTES = Object.freeze({
   ADMIN_REGISTRATION: (id) => `/admin/registrations/${id}`,
   ADMIN_EXPORTS: '/admin/registrations#exports',
   ADMIN_HEALTH: '/admin/health',
+  ADMIN_SETTINGS: '/admin/settings',
+  ADMIN_BLOCKED: '/admin/blocked',
+  ADMIN_ADD_TEAMS: '/admin/add-teams',
 });
 
 export const HOME_SECTIONS = Object.freeze({
@@ -36,6 +39,9 @@ export const SITE_NAV = Object.freeze([
 export const ADMIN_NAV = Object.freeze([
   { to: ROUTES.ADMIN_DASHBOARD, label: 'Dashboard', end: true },
   { to: ROUTES.ADMIN_REGISTRATIONS, label: 'Registrations' },
+  { to: ROUTES.ADMIN_BLOCKED, label: 'Blocked users' },
+  { to: ROUTES.ADMIN_SETTINGS, label: 'Registration Limit' },
   { to: ROUTES.ADMIN_HEALTH, label: 'Website Health' },
+  { to: ROUTES.ADMIN_ADD_TEAMS, label: 'Add Teams' },
   { to: ROUTES.ADMIN_EXPORTS, label: 'Exports' },
 ]);
