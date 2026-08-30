@@ -3,7 +3,7 @@ const asyncHandler = require('../utils/asyncHandler');
 const healthService = require('../services/health.service');
 
 const getHealth = asyncHandler(async (req, res) => {
-  const data = healthService.getHealthStatus();
+  const data = await healthService.getHealthStatus();
 
   if (!data.lockedToRequiredDatabase) {
     return sendError(res, {

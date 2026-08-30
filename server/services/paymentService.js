@@ -79,8 +79,13 @@ async function createPaymentOrder(body) {
     throw new AppError('Registration not found', 404, ERROR_CODES.NOT_FOUND);
   }
 
-  if ((registration.members || []).some((member) => isBlockedRegisterNumber(member.registerNumber))) {
-    throw new AppError(BLOCKED_REGISTER_MESSAGE, 403, ERROR_CODES.BLOCKED_REGISTER_NUMBER);
+  if (registration.members && registration.members.length > 0) {
+    const checks = await Promise.all(
+      (registration.members || []).map((member) => isBlockedRegisterNumber(member.registerNumber))
+    );
+    if (checks.some(Boolean)) {
+      throw new AppError(BLOCKED_REGISTER_MESSAGE, 403, ERROR_CODES.BLOCKED_REGISTER_NUMBER);
+    }
   }
 
   if (registration.paymentStatus === PAYMENT_STATUSES.PAID) {

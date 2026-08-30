@@ -1,8 +1,8 @@
 const REGISTRATION_FEE_PER_PARTICIPANT = 350;
 const CURRENCY = 'INR';
 
-const MIN_TEAM_MEMBERS = 1;
-const MAX_TEAM_MEMBERS = 6;
+const MIN_TEAM_MEMBERS = 3;
+const MAX_TEAM_MEMBERS = 4;
 
 const STUDENT_TYPES = Object.freeze({
   HOSTEL: 'HOSTEL',

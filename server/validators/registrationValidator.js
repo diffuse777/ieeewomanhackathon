@@ -16,10 +16,7 @@ const {
   membersHaveUniqueRegisterNumbers,
   membersHaveUniqueEmails,
 } = require('./registration.validators');
-const {
-  BLOCKED_REGISTER_MESSAGE,
-  findBlockedMembers,
-} = require('../utils/blockedRegisterNumbers');
+const { BLOCKED_REGISTER_MESSAGE, findBlockedMembers } = require('../utils/blockedRegisterNumbers');
 
 function throwValidation(details, message = 'Validation failed') {
   throw new AppError(message, 400, ERROR_CODES.VALIDATION_ERROR, details);
@@ -129,7 +126,7 @@ function sanitizeMember(rawMember, index, details) {
   return member;
 }
 
-function validateCreateRegistration(body) {
+async function validateCreateRegistration(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
     throwValidation([{ field: 'body', message: 'Request body must be a JSON object' }], 'Invalid request body');
   }
@@ -159,7 +156,7 @@ function validateCreateRegistration(body) {
   }
 
   const members = body.members.map((member, index) => sanitizeMember(member, index, details)).filter(Boolean);
-  const blockedMembers = findBlockedMembers(members);
+  const blockedMembers = await findBlockedMembers(members);
 
   if (blockedMembers.length > 0) {
     throw new AppError(

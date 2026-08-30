@@ -3,6 +3,9 @@ const { validateCreateRegistration } = require('../validators/registrationValida
 const { calculateRegistrationFee } = require('../utils/calculateRegistrationFee');
 const { PAYMENT_STATUSES, ERROR_CODES } = require('../utils/constants');
 const AppError = require('../utils/AppError');
+const RegistrationLimit = require('../models/RegistrationLimit');
+
+const ACTIVE_PAYMENT_STATUSES = [PAYMENT_STATUSES.PENDING, PAYMENT_STATUSES.PAID];
 
 function toPublicRegistration(registration) {
   return {
@@ -38,8 +41,30 @@ function collectConflicts(existingRegistrations, registerNumbers, emails) {
 }
 
 async function createRegistration(body) {
-  const input = validateCreateRegistration(body);
+  const input = await validateCreateRegistration(body);
   const totalAmount = calculateRegistrationFee(input.memberCount);
+  const paymentMode = String(body?.paymentMode || '').toUpperCase();
+  const isCashPayment = paymentMode === 'CASH';
+
+  // Enforce registration window and overall limit if configured
+  const limitDoc = await RegistrationLimit.findOne().lean();
+  if (limitDoc) {
+    const now = new Date();
+    if (limitDoc.startAt && new Date(limitDoc.startAt) > now) {
+      throw new AppError('Registration is not open yet', 403, ERROR_CODES.FORBIDDEN);
+    }
+
+    if (limitDoc.endAt && new Date(limitDoc.endAt) <= now) {
+      throw new AppError('Registration is closed', 403, ERROR_CODES.FORBIDDEN);
+    }
+
+    if (typeof limitDoc.limit === 'number') {
+      const current = await registrationRepository.countByFilter({ paymentStatus: { $in: ACTIVE_PAYMENT_STATUSES } });
+      if (current >= limitDoc.limit) {
+        throw new AppError('Registration limit reached', 403, ERROR_CODES.FORBIDDEN);
+      }
+    }
+  }
 
   const existing = await registrationRepository.findActiveByParticipantKeys({
     registerNumbers: input.members.map((member) => member.registerNumber),
@@ -75,12 +100,12 @@ async function createRegistration(body) {
     members: input.members,
     memberCount: input.memberCount,
     totalAmount,
-    paymentStatus: PAYMENT_STATUSES.PENDING,
+    paymentStatus: isCashPayment ? PAYMENT_STATUSES.PAID : PAYMENT_STATUSES.PENDING,
     payment: {
       paymentOrderId: null,
-      paymentTransactionId: null,
-      paymentStatus: PAYMENT_STATUSES.PENDING,
-      paidAt: null,
+      paymentTransactionId: isCashPayment ? `cash-${Date.now()}` : null,
+      paymentStatus: isCashPayment ? PAYMENT_STATUSES.PAID : PAYMENT_STATUSES.PENDING,
+      paidAt: isCashPayment ? new Date() : null,
     },
   });
 

@@ -5,6 +5,8 @@ const paymentRoutes = require('./paymentRoutes');
 const adminAuthRoutes = require('./adminAuthRoutes');
 const adminRegistrationRoutes = require('./adminRegistrationRoutes');
 const adminHealthRoutes = require('./adminHealthRoutes');
+const adminBlockedRoutes = require('./adminBlockedRoutes');
+const adminSettingsRoutes = require('./adminSettingsRoutes');
 
 const router = express.Router();
 
@@ -14,6 +16,8 @@ router.use('/payments', paymentRoutes);
 router.use('/admin/auth', adminAuthRoutes);
 router.use('/admin/registrations', adminRegistrationRoutes);
 router.use('/admin/health', adminHealthRoutes);
+router.use('/admin/settings', adminSettingsRoutes);
+router.use('/admin/blocked', adminBlockedRoutes);
 
 // Future modules (not implemented in this phase):
 // router.use('/exports', exportRoutes);
