@@ -31,7 +31,7 @@ export function AdminAddTeamsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [blockedNotice, setBlockedNotice] = useState(false);
   const [teamErrors, setTeamErrors] = useState({});
-  const [paymentMode, setPaymentMode] = useState('ONLINE');
+  const [paymentMode, setPaymentMode] = useState('CASH');
   usePageTitle(`${HACKATHON.eventName} · Add Teams`);
 
   const memberOptions = Array.from(

@@ -151,6 +151,43 @@
   padding-left: 1.15rem;
 }
 
+.payment-backup-account {
+  background: var(--surface-muted);
+  border-left: 4px solid var(--accent);
+  border-radius: 4px;
+  margin-top: 0.85rem;
+  padding: 1rem;
+}
+
+.payment-backup-label {
+  color: var(--ink);
+  font-size: 0.9rem;
+  margin: 0 0 0.75rem;
+}
+
+.payment-account-details {
+  display: grid;
+  gap: 0.2rem 0.5rem;
+  grid-template-columns: auto 1fr;
+  margin: 0;
+}
+
+.payment-account-details dt {
+  color: var(--muted);
+  font-family: var(--font-label);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.payment-account-details dd {
+  font-family: var(--font-body);
+  font-weight: 600;
+  margin: 0;
+  word-break: break-all;
+}
+
 .payment-amount {
   font-family: var(--font-body);
   font-size: 2rem;

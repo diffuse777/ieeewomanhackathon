@@ -42,6 +42,18 @@ export function QRPayment({
           <li>Take the payment screenshot and upload it in the given link.</li>
           <li>The image should be in the format your_team_name.png / .jpg / .jpeg.</li>
         </ol>
+
+        <div className="payment-backup-account">
+          <p className="payment-backup-label"><strong>In case QR is not visible, use this account number:</strong></p>
+          <dl className="payment-account-details">
+            <dt>Name:</dt>
+            <dd>DIGITAL DREAMS</dd>
+            <dt>Account number:</dt>
+            <dd>335602011000163</dd>
+            <dt>IFSC Code:</dt>
+            <dd>UBIN0562734</dd>
+          </dl>
+        </div>
       </div>
     </div>
   );
