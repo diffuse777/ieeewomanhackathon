@@ -27,17 +27,29 @@ export function RegisterPage() {
 
   useEffect(() => {
     let mounted = true;
-    getHealth()
-      .then((res) => {
-        const data = res.data || {};
-        const win = data.registrationWindow || null;
-        if (!mounted) return;
-        setWindowInfo(win);
-        setRegistrationOpen(win ? Boolean(win.open) : true);
-      })
-      .catch(() => {});
+
+    function syncRegistrationState() {
+      getHealth()
+        .then((res) => {
+          if (!mounted) return;
+          const data = res.data || {};
+          const win = data.registrationWindow || null;
+          setWindowInfo(win);
+          setRegistrationOpen(win ? Boolean(win.open) : true);
+        })
+        .catch(() => {
+          if (mounted) {
+            setRegistrationOpen(false);
+          }
+        });
+    }
+
+    syncRegistrationState();
+    const timer = setInterval(syncRegistrationState, 10000);
+
     return () => {
       mounted = false;
+      clearInterval(timer);
     };
   }, []);
 

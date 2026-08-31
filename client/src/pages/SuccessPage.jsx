@@ -5,6 +5,9 @@ import { ROUTES } from '../constants/routes';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { loadSuccessSnapshot } from '../utils/registrationDraft';
 
+const WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/D7OSbJMmGoH6J7c539mSyt?s=qt&p=a&mlu=4';
+const WHATSAPP_GROUP_QR = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(WHATSAPP_GROUP_LINK)}`;
+
 export function SuccessPage() {
   const snapshot = loadSuccessSnapshot();
   usePageTitle(`${HACKATHON.eventName} · Registration successful`);
@@ -22,6 +25,24 @@ export function SuccessPage() {
       </div>
       <p className="lede">Payment is successful. Be ready to face the challenge.</p>
       <section className="card">
+        <div className="whatsapp-join-card">
+          <img
+            className="whatsapp-join-card__qr"
+            src={WHATSAPP_GROUP_QR}
+            alt="WhatsApp group QR code"
+          />
+          <div className="whatsapp-join-card__content">
+            <p className="whatsapp-join-card__title">Join the WhatsApp group</p>
+            <a
+              className="whatsapp-join-card__link"
+              href={WHATSAPP_GROUP_LINK}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {WHATSAPP_GROUP_LINK}
+            </a>
+          </div>
+        </div>
         <dl className="summary-grid">
           <dt>Team name</dt>
           <dd>{snapshot.teamName}</dd>

@@ -23,6 +23,8 @@ import { getErrorMessage } from '../utils/apiError';
 import { clearDraft, saveSuccessSnapshot } from '../utils/registrationDraft';
 
 const SERVER_QR_IMAGE_URL = `${API_BASE_URL}/payments/qr-image`;
+const WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/D7OSbJMmGoH6J7c539mSyt?s=qt&p=a&mlu=4';
+const WHATSAPP_GROUP_QR = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(WHATSAPP_GROUP_LINK)}`;
 
 function mergePaymentOrder(current, next) {
   if (!next) {
@@ -50,6 +52,8 @@ export function PaymentPage() {
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [pdfError, setPdfError] = useState('');
   const [blockedNotice, setBlockedNotice] = useState(false);
+  const [proofUploaded, setProofUploaded] = useState(false);
+  const [redirectedToDrive, setRedirectedToDrive] = useState(false);
   const leavingHomeRef = useRef(false);
   usePageTitle(`${HACKATHON.eventName} · Payment`);
 
@@ -184,6 +188,15 @@ export function PaymentPage() {
   async function handleVerify() {
     setError('');
     setReferenceError('');
+
+    // If proof hasn't been uploaded yet, redirect to Google Drive
+    if (!proofUploaded && proofDriveUrl) {
+      setLoadingLabel('Opening upload folder…');
+      window.open(proofDriveUrl, '_blank');
+      setRedirectedToDrive(true);
+      return;
+    }
+
     setLoadingLabel('Verifying payment…');
 
     if (!referenceLooksValid) {
@@ -293,6 +306,9 @@ export function PaymentPage() {
                   setPaymentReference(value);
                   setReferenceError('');
                 }}
+                proofUploaded={proofUploaded}
+                redirectedToDrive={redirectedToDrive}
+                onUploadDone={() => setProofUploaded(true)}
               />
             ) : (
               <ErrorState
@@ -304,9 +320,28 @@ export function PaymentPage() {
               Amount payable: {amount != null ? formatMoney(amount) : 'awaiting server total'}. Payment
               status: {status || PAYMENT_STATUSES.PENDING}.
             </p>
-            <button className="btn" type="button" onClick={handleVerify} disabled={savingReference}>
-              {savingReference ? 'Saving…' : 'Verify payment'}
-            </button>
+            {redirectedToDrive && !proofUploaded ? (
+              <div className="payment-upload-inline">
+                <span className="payment-upload-inline__text">Waiting for upload…</span>
+                <button
+                  type="button"
+                  className="btn btn--secondary payment-upload-inline__button"
+                  onClick={() => setProofUploaded(true)}
+                >
+                  Done uploading
+                </button>
+              </div>
+            ) : (
+              <button className="btn" type="button" onClick={handleVerify} disabled={savingReference}>
+                {savingReference
+                  ? 'Saving…'
+                  : proofUploaded
+                    ? 'Verify payment'
+                    : proofDriveUrl
+                      ? 'Upload proof to Google Drive'
+                      : 'Verify payment'}
+              </button>
+            )}
           </div>
         </div>
       ) : null}
@@ -315,6 +350,24 @@ export function PaymentPage() {
         <Modal title="Payment successful">
           <p>Payment is successful.</p>
           <p className="serif-kicker modal__challenge">Be ready to face the challenge.</p>
+          <div className="whatsapp-join-card">
+            <img
+              className="whatsapp-join-card__qr"
+              src={WHATSAPP_GROUP_QR}
+              alt="WhatsApp group QR code"
+            />
+            <div className="whatsapp-join-card__content">
+              <p className="whatsapp-join-card__title">Join the WhatsApp group</p>
+              <a
+                className="whatsapp-join-card__link"
+                href={WHATSAPP_GROUP_LINK}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {WHATSAPP_GROUP_LINK}
+              </a>
+            </div>
+          </div>
           <dl className="summary-grid">
             <dt>Team name</dt>
             <dd>{order?.teamName || draft.teamName}</dd>

@@ -6,6 +6,9 @@ export function QRPayment({
   paymentReference,
   referenceError,
   onReferenceChange,
+  proofUploaded,
+  redirectedToDrive,
+  onUploadDone,
 }) {
   if (!imageSrc) {
     return null;
@@ -18,6 +21,25 @@ export function QRPayment({
       </figure>
 
       <div className="payment-proof">
+        {proofDriveUrl && redirectedToDrive ? (
+          <div className="payment-proof__upload-status">
+            <p className="payment-proof__label">Upload payment screenshot</p>
+            <div className="payment-proof__upload-inline">
+              <p className="payment-proof__status-message">Waiting for upload…</p>
+              <button
+                type="button"
+                className="btn btn--secondary payment-proof__done-button"
+                onClick={onUploadDone}
+              >
+                Done uploading
+              </button>
+            </div>
+            {proofUploaded ? (
+              <p className="payment-proof__success-message">✓ Payment proof uploaded successfully</p>
+            ) : null}
+          </div>
+        ) : null}
+
         <FormInput
           id="upi-reference-id"
           label="Enter the UPI reference id"
@@ -28,15 +50,6 @@ export function QRPayment({
           placeholder="UPI / bank transaction ID"
           onChange={onReferenceChange}
         />
-
-        {proofDriveUrl ? (
-          <p className="payment-proof__drive">
-            <span className="payment-proof__label">Upload payment screenshot</span>
-            <a href={proofDriveUrl} target="_blank" rel="noreferrer">
-              {proofDriveUrl}
-            </a>
-          </p>
-        ) : null}
 
         <ol className="payment-proof__notes">
           <li>Take the payment screenshot and upload it in the given link.</li>

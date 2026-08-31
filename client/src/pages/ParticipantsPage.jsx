@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { Modal } from '../components/Modal';
 import { ParticipantForm } from '../components/register/ParticipantForm';
@@ -8,6 +8,7 @@ import { API_ERROR_CODES } from '../constants/api';
 import { ROUTES } from '../constants/routes';
 import { useRegistrationDraft } from '../context/RegistrationDraftContext';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { getHealth } from '../services/healthService';
 import { createRegistration } from '../services/registrationService';
 import { getErrorMessage } from '../utils/apiError';
 import {
@@ -29,7 +30,41 @@ export function ParticipantsPage() {
   const [reviewing, setReviewing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [blockedNotice, setBlockedNotice] = useState(false);
+  const [registrationClosed, setRegistrationClosed] = useState(false);
   usePageTitle(`${HACKATHON.eventName} · Participants`);
+
+  useEffect(() => {
+    let mounted = true;
+
+    function syncRegistrationState() {
+      getHealth()
+        .then((res) => {
+          if (!mounted) return;
+          const win = res.data?.registrationWindow || null;
+          const isClosed = Boolean(win) && !win.open;
+          setRegistrationClosed(isClosed);
+          if (isClosed) {
+            setFormError('Registration is currently closed.');
+            setReviewing(false);
+          }
+        })
+        .catch(() => {
+          if (mounted) {
+            setRegistrationClosed(true);
+            setFormError('Registration is currently closed.');
+            setReviewing(false);
+          }
+        });
+    }
+
+    syncRegistrationState();
+    const timer = setInterval(syncRegistrationState, 10000);
+
+    return () => {
+      mounted = false;
+      clearInterval(timer);
+    };
+  }, []);
 
   const teamErrors = validateTeamStep(draft.teamName, draft.memberCount);
   if (Object.keys(teamErrors).length > 0) {
@@ -65,6 +100,11 @@ export function ParticipantsPage() {
 
   function handleReview(event) {
     event.preventDefault();
+    if (registrationClosed) {
+      setFormError('Registration is currently closed.');
+      setReviewing(false);
+      return;
+    }
     const blockedIndex = findBlockedRegisterIndex(draft.members);
     if (blockedIndex >= 0) {
       markBlockedRegister(blockedIndex);
@@ -82,6 +122,11 @@ export function ParticipantsPage() {
   }
 
   async function handleContinueToPayment() {
+    if (registrationClosed) {
+      setFormError('Registration is currently closed.');
+      setReviewing(false);
+      return;
+    }
     const blockedIndex = findBlockedRegisterIndex(draft.members);
     if (blockedIndex >= 0) {
       markBlockedRegister(blockedIndex);
