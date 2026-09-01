@@ -10,13 +10,19 @@ function readEnv(name) {
 }
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const ADMIN_IDENTIFIER_PATTERN = /^[A-Za-z0-9._-]+$/;
 
-function normalizeAdminEmail(value) {
-  const email = String(value || '').trim().toLowerCase();
-  if (!email || email === 'admin' || !EMAIL_PATTERN.test(email)) {
+function normalizeAdminIdentifier(value) {
+  const identifier = String(value || '').trim().toLowerCase();
+  if (!identifier || identifier === 'admin') {
     return 'admin@example.com';
   }
-  return email;
+
+  if (EMAIL_PATTERN.test(identifier) || ADMIN_IDENTIFIER_PATTERN.test(identifier)) {
+    return identifier;
+  }
+
+  return 'admin@example.com';
 }
 
 function derivedSecret(purpose, parts) {
@@ -75,7 +81,7 @@ function loadEnv() {
   assertEnv();
 
   const nodeEnv = process.env.NODE_ENV || 'development';
-  const adminEmail = normalizeAdminEmail(readEnv('ADMIN_EMAIL'));
+  const adminEmail = normalizeAdminIdentifier(readEnv('ADMIN_EMAIL'));
   const adminPassword = readEnv('ADMIN_PASSWORD');
   const mongoUri = withForcedMongoDbName(readEnv('MONGODB_URI'), REQUIRED_MONGO_DB_NAME);
   const mongoDbName = REQUIRED_MONGO_DB_NAME;

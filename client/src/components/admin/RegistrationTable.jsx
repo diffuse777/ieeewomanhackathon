@@ -13,7 +13,7 @@ function formatDate(value) {
   return date.toLocaleString();
 }
 
-export function RegistrationTable({ teams, deletingId, onDelete }) {
+export function RegistrationTable({ teams, deletingId, downloadingId, onDelete, onDownload }) {
   return (
     <>
       <div className="data-table-wrap">
@@ -46,6 +46,14 @@ export function RegistrationTable({ teams, deletingId, onDelete }) {
                     <button
                       type="button"
                       className="btn btn--secondary btn--compact"
+                      disabled={downloadingId === team.id || deletingId === team.id}
+                      onClick={() => onDownload(team)}
+                    >
+                      {downloadingId === team.id ? 'Downloading…' : 'Download confirmation'}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn--secondary btn--compact"
                       disabled={deletingId === team.id}
                       onClick={() => onDelete(team)}
                     >
@@ -73,6 +81,14 @@ export function RegistrationTable({ teams, deletingId, onDelete }) {
             <p>{formatDate(team.createdAt)}</p>
             <div className="table-actions">
               <Link to={ROUTES.ADMIN_REGISTRATION(team.id)}>Open team</Link>
+              <button
+                type="button"
+                className="btn btn--secondary btn--compact"
+                disabled={downloadingId === team.id || deletingId === team.id}
+                onClick={() => onDownload(team)}
+              >
+                {downloadingId === team.id ? 'Downloading…' : 'Download confirmation'}
+              </button>
               <button
                 type="button"
                 className="btn btn--secondary btn--compact"

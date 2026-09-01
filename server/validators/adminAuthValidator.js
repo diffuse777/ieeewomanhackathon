@@ -9,22 +9,25 @@ function validateAdminLogin(body) {
     throw new AppError('Invalid request body', 400, ERROR_CODES.VALIDATION_ERROR);
   }
 
-  let email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
-  if (!email && typeof body.username === 'string') {
-    email = body.username.trim().toLowerCase();
+  let identifier = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+  if (!identifier && typeof body.username === 'string') {
+    identifier = body.username.trim().toLowerCase();
   }
   const password = typeof body.password === 'string' ? body.password : '';
-  const envEmail = String(loadEnv().admin.email).trim().toLowerCase();
+  const envIdentifier = String(loadEnv().admin.email).trim().toLowerCase();
 
-  if (!email || email === 'admin' || email === 'admin@example.com') {
-    email = envEmail || 'admin@example.com';
+  if (!identifier || identifier === 'admin' || identifier === 'admin@example.com') {
+    identifier = envIdentifier || 'admin@example.com';
   }
 
-  if (!email || !EMAIL_PATTERN.test(email) || !password) {
+  const isEmailLike = EMAIL_PATTERN.test(identifier);
+  const isUsernameLike = /^[A-Za-z0-9._-]+$/.test(identifier);
+
+  if (!identifier || (!isEmailLike && !isUsernameLike) || !password) {
     throw new AppError('Email and password are required', 400, ERROR_CODES.VALIDATION_ERROR);
   }
 
-  return { email, password };
+  return { email: identifier, password };
 }
 
 module.exports = { validateAdminLogin };

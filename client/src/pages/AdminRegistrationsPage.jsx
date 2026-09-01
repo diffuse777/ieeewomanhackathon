@@ -14,6 +14,7 @@ import {
   exportRegistrationsPdf,
   listRegistrations,
 } from '../services/adminRegistrationService';
+import { downloadTeamConfirmationPdf } from '../services/paymentService';
 import { getErrorMessage } from '../utils/apiError';
 
 export function AdminRegistrationsPage() {
@@ -28,6 +29,7 @@ export function AdminRegistrationsPage() {
   const [exportMessage, setExportMessage] = useState('');
   const [pendingDelete, setPendingDelete] = useState(null);
   const [deletingId, setDeletingId] = useState('');
+  const [downloadingId, setDownloadingId] = useState('');
   const [deleteError, setDeleteError] = useState('');
   const debouncedSearch = useDebouncedValue(search);
   usePageTitle(`${HACKATHON.eventName} · Registrations`);
@@ -80,6 +82,21 @@ export function AdminRegistrationsPage() {
       setExportMessage(getErrorMessage(err) || 'Export failed. Please try again.');
     } finally {
       setExportState('');
+    }
+  }
+
+  async function handleDownloadConfirmation(team) {
+    if (!team?.id) {
+      return;
+    }
+
+    setDownloadingId(team.id);
+    try {
+      await downloadTeamConfirmationPdf(team.id, team.teamName);
+    } catch (err) {
+      setError(getErrorMessage(err) || 'Unable to download confirmation PDF.');
+    } finally {
+      setDownloadingId('');
     }
   }
 
@@ -150,7 +167,13 @@ export function AdminRegistrationsPage() {
         </div>
       ) : null}
       {teams.length > 0 ? (
-        <RegistrationTable teams={teams} deletingId={deletingId} onDelete={setPendingDelete} />
+        <RegistrationTable
+          teams={teams}
+          deletingId={deletingId}
+          downloadingId={downloadingId}
+          onDelete={setPendingDelete}
+          onDownload={handleDownloadConfirmation}
+        />
       ) : null}
       {pagination && pagination.totalPages > 1 ? (
         <div className="pagination">

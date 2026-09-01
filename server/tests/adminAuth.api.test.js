@@ -73,6 +73,18 @@ describe('Admin authentication', () => {
     accessToken = json.data.token;
   });
 
+  it('allows login with the configured username-style admin credentials', async () => {
+    const { status, json } = await postJson('/api/admin/auth/login', {
+      username: 'ieeewoman',
+      password: 'mensaregreat',
+    });
+
+    assert.equal(status, 200);
+    assert.equal(json.success, true);
+    assert.equal(json.data.admin.email, 'ieeewoman');
+    assert.ok(json.data.token);
+  });
+
   it('rejects an invalid password with a generic error', async () => {
     const { status, json } = await postJson('/api/admin/auth/login', {
       email: config.admin.email,
